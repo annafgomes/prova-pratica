@@ -56,12 +56,7 @@ public class Product
     /// <summary>
     /// Construtor protegido necessário para o Entity Framework.
     /// </summary>
-    protected Product()
-    {
-        Name = null!;
-        Description = null!;
-        Category = null!;
-    }
+    protected Product() { }
 
     /// <summary>
     /// Construtor responsável por criar um novo produto,

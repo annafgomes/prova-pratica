@@ -37,7 +37,7 @@ public class GetAllProductsUseCaseTests
     [Fact]
     public async Task Should_Return_Empty_List_When_No_Products_Exist()
     {
-        // Arrange - prepara lista vazia simulada
+        //prepara lista vazia simulada
         var repositoryMock = new Mock<IProductRepository>();
         repositoryMock
             .Setup(r => r.GetAllAsync())
@@ -45,10 +45,10 @@ public class GetAllProductsUseCaseTests
 
         var useCase = new GetAllProductsUseCase(repositoryMock.Object);
 
-        // Act - executa o caso de uso
+        // executa o caso de uso
         var result = await useCase.ExecuteAsync();
 
-        // Assert - verifica se a lista está vazia
+        //verifica se a lista está vazia
         Assert.NotNull(result);
         Assert.Empty(result);
     }

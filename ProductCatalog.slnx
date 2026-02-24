@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Itens de Solução/">
     <File Path=".gitignore" />
+    <File Path="ARCHITECTURE.md" />
   </Folder>
   <Project Path="ProductCatalog.API/ProductCatalog.API.csproj" />
   <Project Path="ProductCatalog.Application/ProductCatalog.Application.csproj" />

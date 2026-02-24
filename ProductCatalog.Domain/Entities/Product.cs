@@ -1,38 +1,66 @@
-﻿namespace ProductCatalog.Domain.Entities;
+﻿using ProductCatalog.Domain.Enums;
+
+namespace ProductCatalog.Domain.Entities;
 
 /// <summary>
-/// Representa um produto do catálogo.
-/// Contém as regras de negócio relacionadas ao produto.
+/// Representa um produto do  catálogo.
+/// Contém as regras de negócio relacionadas ao comportamento do  produto.
 /// </summary>
 public class Product
 {
-    // Identificador único do produto
+    /// <summary>
+    /// Identificador único do produto.
+    /// </summary>
     public Guid Id { get; private set; }
 
-    // Nome do produto
+    /// <summary>
+    /// Nome do produto.
+    /// </summary>
     public string Name { get; private set; }
 
-    // Descrição detalhada
+    /// <summary>
+    /// Descrição detalhada  do produto.
+    /// </summary>
     public string Description { get; private set; }
 
-    // Preço do produto
+    /// <summary>
+    /// Preço de venda do produto.
+    /// </summary>
     public decimal Price { get; private set; }
 
-    // Quantidade disponível em estoque
+    /// <summary>
+    /// Quantidade disponível em estoque.
+    /// </summary>
     public int StockQuantity { get; private set; }
 
-    // Categoria do produto (ex: Eletrônicos, Roupas)
+    /// <summary>
+    /// Categoria  à qual o produto pertence.
+    /// </summary>
     public string Category { get; private set; }
 
-    // Indica se o produto está ativo para venda
-    public bool IsActive { get; private set; }
+    /// <summary>
+    /// Status atual do produto (Ativo ou Inativo).
+    /// </summary>
+    public ProductStatus Status { get; private set; }
 
-    // Data de criação do produto
+    /// <summary>
+    /// Caminho  da imagem associada ao produto.
+    /// </summary>
+    public string? ImagePath { get; private set; }
+
+    /// <summary>
+    /// Data de criação do produto.
+    /// </summary>
     public DateTime CreatedAt { get; private set; }
 
     /// <summary>
-    /// Construtor responsável por criar um novo produto.
-    /// Executa todas as validações necessárias.
+    /// Construtor protegido necessário para o Entity Framework.
+    /// </summary>
+    protected Product() { }
+
+    /// <summary>
+    /// Construtor responsável por criar um novo produto,
+    /// aplicando todas as validações de negócio.
     /// </summary>
     public Product(
         string name,
@@ -49,12 +77,12 @@ public class Product
         Price = price;
         StockQuantity = stockQuantity;
         Category = category;
-        IsActive = true;
+        Status = ProductStatus.Active;
         CreatedAt = DateTime.UtcNow;
     }
 
     /// <summary>
-    /// Valida as regras de negócio do produto.
+    /// Valida as  regras de negócio obrigatórias para o produto.
     /// </summary>
     private void Validate(
         string name,
@@ -63,16 +91,32 @@ public class Product
         string category)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("O nome do produto não pode ser vazio.", nameof(name));
+            throw new ArgumentException("Name is required.", nameof(name));
 
-        if (price < 0)
-            throw new ArgumentException("O preço não pode ser negativo.", nameof(price));
+        if (price <= 0)
+            throw new  ArgumentException("Price must be greater than zero.", nameof(price));
 
         if (stockQuantity < 0)
-            throw new ArgumentException("O estoque não pode ser negativo.", nameof(stockQuantity));
+            throw new ArgumentException("Stock quantity cannot be negative.", nameof(stockQuantity));
 
         if (string.IsNullOrWhiteSpace(category))
-            throw new ArgumentException("A categoria não pode ser vazia.", nameof(category));
+            throw new ArgumentException("Category is required.", nameof(category));
+    }
+
+    /// <summary>
+    /// Atualiza informações principais do produto.
+    /// </summary>
+    public void UpdateDetails(string name, string description, string category)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Name is required.", nameof(name));
+
+        if (string.IsNullOrWhiteSpace(category))
+            throw new ArgumentException("Category is required.", nameof(category));
+
+        Name = name;
+        Description = description;
+        Category = category;
     }
 
     /// <summary>
@@ -80,8 +124,8 @@ public class Product
     /// </summary>
     public void UpdatePrice(decimal newPrice)
     {
-        if (newPrice < 0)
-            throw new ArgumentException("O preço não pode ser negativo.", nameof(newPrice));
+        if (newPrice <= 0)
+            throw new ArgumentException("Price must be greater than zero.", nameof(newPrice));
 
         Price = newPrice;
     }
@@ -92,16 +136,35 @@ public class Product
     public void UpdateStock(int newStock)
     {
         if (newStock < 0)
-            throw new ArgumentException("O estoque não pode ser negativo.", nameof(newStock));
+            throw new ArgumentException("Stock quantity cannot be negative.", nameof(newStock));
 
         StockQuantity = newStock;
     }
 
     /// <summary>
-    /// Desativa o produto.
+    /// Define ou altera o caminho da imagem do produto.
+    /// </summary>
+    public void SetImage(string imagePath)
+    {
+        if (string.IsNullOrWhiteSpace(imagePath))
+            throw new ArgumentException("Image path is invalid.", nameof(imagePath));
+
+        ImagePath = imagePath;
+    }
+
+    /// <summary>
+    /// Ativa o produto para venda.
+    /// </summary>
+    public void Activate()
+    {
+        Status = ProductStatus.Active;
+    }
+
+    /// <summary>
+    /// Desativa o produto para venda .
     /// </summary>
     public void Deactivate()
     {
-        IsActive = false;
+        Status = ProductStatus.Inactive;
     }
 }

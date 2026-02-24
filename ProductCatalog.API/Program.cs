@@ -1,7 +1,7 @@
 using ProductCatalog.Domain.Interfaces;
 using ProductCatalog.Infrastructure.Repositories;
 using ProductCatalog.Application.UseCases.Products;
-
+using ProductCatalog.API.Middlewares;
 var builder = WebApplication.CreateBuilder(args);
 
 // Controllers
@@ -27,10 +27,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
 
+}
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthorization();
+//app.UseMiddleware<ProductCatalog.API.Middlewares.ExceptionHandlingMiddleware>();
 app.MapControllers();
 
 app.Run();

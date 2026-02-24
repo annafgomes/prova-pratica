@@ -12,38 +12,34 @@ public class ProductsController : ControllerBase
     /// Cria um novo produto
     /// </summary>
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(
-    [FromServices] CreateProductUseCase useCase,
-    [FromBody] CreateProductHttpRequest request)
+        [FromServices] CreateProductUseCase useCase,
+        [FromBody] CreateProductHttpRequest request)
     {
-        try
+        var applicationRequest = new ProductCatalog.Application.UseCases.Products.CreateProductRequest
         {
-            var applicationRequest = new ProductCatalog.Application.UseCases.Products.CreateProductRequest
-            {
-                Name = request.Name,
-                Description = request.Description,
-                Price = request.Price,
-                StockQuantity = request.StockQuantity,
-                Category = request.Category
-            };
+            Name = request.Name,
+            Description = request.Description,
+            Price = request.Price,
+            StockQuantity = request.StockQuantity,
+            Category = request.Category
+        };
 
-            var productId = await useCase.ExecuteAsync(applicationRequest);
+        var productId = await useCase.ExecuteAsync(applicationRequest);
 
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = productId },
-                null);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = productId },
+            null);
     }
 
     /// <summary>
     /// Retorna todos os produtos
     /// </summary>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(
         [FromServices] GetAllProductsUseCase useCase)
     {
@@ -54,71 +50,51 @@ public class ProductsController : ControllerBase
     /// <summary>
     /// Retorna produto por id
     /// </summary>
-
     [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(
-    [FromServices] GetProductByIdUseCase useCase,
-    Guid id)
+        [FromServices] GetProductByIdUseCase useCase,
+        Guid id)
     {
-        try
-        {
-            var product = await useCase.ExecuteAsync(id);
-            return Ok(product);
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
+        var product = await useCase.ExecuteAsync(id);
+        return Ok(product);
     }
 
     /// <summary>
     /// Atualiza um produto existente
     /// </summary>
     [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
-    [FromServices] UpdateProductUseCase useCase,
-    Guid id,
-    [FromBody] UpdateProductHttpRequest request)
+        [FromServices] UpdateProductUseCase useCase,
+        Guid id,
+        [FromBody] UpdateProductHttpRequest request)
     {
-        try
-        {
-            await useCase.ExecuteAsync(
-                id,
-                request.Name,
-                request.Description,
-                request.Price,
-                request.StockQuantity,
-                request.Category);
+        await useCase.ExecuteAsync(
+            id,
+            request.Name,
+            request.Description,
+            request.Price,
+            request.StockQuantity,
+            request.Category);
 
-            return NoContent();
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
+        return NoContent();
     }
 
     /// <summary>
     /// Remove um produto existente
     /// </summary>
-
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(
         [FromServices] DeleteProductUseCase useCase,
         Guid id)
     {
-        try
-        {
-            await useCase.ExecuteAsync(id);
-            return NoContent(); // 204 - sucesso
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound(); // 404 - produto nao encontrado
-        }
+        await useCase.ExecuteAsync(id);
+        return NoContent();
     }
 }

@@ -2,7 +2,7 @@
 using ProductCatalog.Domain.Entities;
 using ProductCatalog.Domain.Enums;
 
-namespace ProductCatalog.Tests;
+namespace ProductCatalog.Tests.Domain;
 
 /// <summary>
 /// Testes unitários da entidade Product.

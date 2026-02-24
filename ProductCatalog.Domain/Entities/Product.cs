@@ -107,7 +107,7 @@ public class Product
         if (string.IsNullOrWhiteSpace(category))
             throw new ArgumentException("Category is required.", nameof(category));
     }
-
+     
     /// <summary>
     /// Atualiza informações principais do produto.
     /// </summary>

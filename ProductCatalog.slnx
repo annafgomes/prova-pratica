@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Itens de Solução/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Project Path="ProductCatalog.API/ProductCatalog.API.csproj" />
+  <Project Path="ProductCatalog.Application/ProductCatalog.Application.csproj" />
+  <Project Path="ProductCatalog.Domain/ProductCatalog.Domain.csproj" />
+  <Project Path="ProductCatalog.Infrastructure/ProductCatalog.Infrastructure.csproj" />
+  <Project Path="ProductCatalog.Tests/ProductCatalog.Tests.csproj" />
+</Solution>

@@ -97,4 +97,57 @@ public class ProductsController : ControllerBase
         await useCase.ExecuteAsync(id);
         return NoContent();
     }
+    /// <summary>
+
+    /// Ativa um produto
+
+    /// </summary>
+
+    [HttpPatch("{id}/activate")]
+
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+    public async Task<IActionResult> Activate(
+
+        [FromServices] ActivateProductUseCase useCase,
+
+        Guid id)
+
+    {
+
+        await useCase.ExecuteAsync(id);
+
+        return NoContent();
+
+    }
+
+
+
+    /// <summary>
+
+    /// Desativa um produto
+
+    /// </summary>
+
+    [HttpPatch("{id}/deactivate")]
+
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+    public async Task<IActionResult> Deactivate(
+
+        [FromServices] DeactivateProductUseCase useCase,
+
+        Guid id)
+
+    {
+
+        await useCase.ExecuteAsync(id);
+
+        return NoContent();
+
+    }
 }

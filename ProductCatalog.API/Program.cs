@@ -13,12 +13,13 @@ builder.Services.AddSwaggerGen();
 
 // Dependency Injection
 builder.Services.AddSingleton<IProductRepository, InMemoryProductRepository>();
-
 builder.Services.AddTransient<CreateProductUseCase>();
 builder.Services.AddTransient<GetAllProductsUseCase>();
 builder.Services.AddTransient<GetProductByIdUseCase>();
 builder.Services.AddTransient<UpdateProductUseCase>();
 builder.Services.AddTransient<DeleteProductUseCase>();
+builder.Services.AddTransient<ActivateProductUseCase>();
+builder.Services.AddTransient<DeactivateProductUseCase>();
 
 var app = builder.Build();
 

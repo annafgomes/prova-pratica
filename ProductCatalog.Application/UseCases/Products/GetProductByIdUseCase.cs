@@ -22,7 +22,7 @@ public class GetProductByIdUseCase
     {
         var product = await _repository.GetByIdAsync(id);
 
-        if (product is null)
+       if (product is null)
             throw new KeyNotFoundException("Product not found.");
 
         return product;

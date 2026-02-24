@@ -1,23 +1,36 @@
+using ProductCatalog.Domain.Interfaces;
+using ProductCatalog.Infrastructure.Repositories;
+using ProductCatalog.Application.UseCases.Products;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Controllers
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Dependency Injection
+builder.Services.AddSingleton<IProductRepository, InMemoryProductRepository>();
+
+builder.Services.AddTransient<CreateProductUseCase>();
+builder.Services.AddTransient<GetAllProductsUseCase>();
+builder.Services.AddTransient<GetProductByIdUseCase>();
+builder.Services.AddTransient<UpdateProductUseCase>();
+builder.Services.AddTransient<DeleteProductUseCase>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Middleware
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

@@ -10,6 +10,8 @@ namespace ProductCatalog.Tests;
 /// </summary>
 public class ProductTests
 {
+    #region Testes de Construtor
+
     /// <summary>
     /// Deve criar um produto ativo quando os dados forem válidos.
     /// </summary>
@@ -42,7 +44,6 @@ public class ProductTests
     [Fact]
     public void CreateProduct_WithInvalidPrice_ShouldThrowException()
     {
-        // Act & Assert
         Assert.Throws<ArgumentException>(() =>
             new Product("Notebook", "Desc", 0m, 10, "Electronics"));
     }
@@ -53,8 +54,77 @@ public class ProductTests
     [Fact]
     public void CreateProduct_WithNegativeStock_ShouldThrowException()
     {
-        // Act & Assert
         Assert.Throws<ArgumentException>(() =>
             new Product("Notebook", "Desc", 100m, -1, "Electronics"));
     }
+
+    #endregion
+
+    #region Testes de Regras de Negócio
+
+    /// <summary>
+    /// Deve alterar o status para Inactive ao desativar o produto.
+    /// </summary>
+    /// 
+    [Fact]
+    public void Deactivate_ShouldChangeStatusToInactive()
+    {
+        // Arrange
+        var product = new Product("Notebook", "Desc", 1000m, 5, "Electronics");
+
+        // Act
+        product.Deactivate();
+
+        // Assert
+        Assert.Equal(ProductStatus.Inactive, product.Status);
+    }
+
+    /// <summary>
+    /// Deve alterar o status para Active ao ativar o produto.
+    /// </summary>
+    [Fact]
+    public void Activate_ShouldChangeStatusToActive()
+    {
+        // Arrange
+        var product = new Product("Notebook", "Desc", 1000m, 5, "Electronics");
+        product.Deactivate();
+
+        // Act
+        product.Activate();
+
+        // Assert
+        Assert.Equal(ProductStatus.Active, product.Status);
+    }
+
+    /// <summary>
+    /// Deve atualizar o preço  quando o novo valor for válido.
+    /// </summary>
+    [Fact]
+    public void UpdatePrice_WithValidPrice_ShouldUpdatePrice()
+    {
+        // Arrange
+        var product = new Product("Notebook", "Desc", 1000m, 5, "Electronics");
+
+        // Act
+        product.UpdatePrice(2000m);
+
+        // Assert
+        Assert.Equal(2000m, product.Price);
+    }
+
+    /// <summary>
+    /// Deve lançar exceção quando tentar atualizar para um preço inválido.
+    /// </summary>
+    [Fact]
+
+    public void UpdatePrice_WithInvalidPrice_ShouldThrowException()
+    {
+        // Arrange
+        var product = new Product("Notebook", "Desc", 1000m, 5, "Electronics");
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => product.UpdatePrice(0));
+    }
+
+    #endregion
 }

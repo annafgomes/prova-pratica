@@ -34,14 +34,12 @@ builder.Services.AddTransient<DeactivateProductUseCase>();
 var app = builder.Build();
 
 // Middleware Pipeline
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
 
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection(); - Desativar direcionamento do HTTPS
 app.UseAuthorization();
 
 app.MapControllers();

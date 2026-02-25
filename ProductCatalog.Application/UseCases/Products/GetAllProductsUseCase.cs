@@ -1,5 +1,6 @@
 ﻿using ProductCatalog.Domain.Entities;
 using ProductCatalog.Domain.Interfaces;
+using ProductCatalog.Domain.Filters;
 
 namespace ProductCatalog.Application.UseCases.Products;
 
@@ -16,10 +17,10 @@ public class GetAllProductsUseCase
     }
 
     /// <summary>
-    /// Executa a listagem de produtos.
+    /// Executa listagem com filtro
     /// </summary>
-    public async Task<IEnumerable<Product>> ExecuteAsync()
+    public async Task<IEnumerable<Product>> ExecuteAsync(GetProductsFilter filter)
     {
-        return await _repository.GetAllAsync();
+        return await _repository.GetFilteredAsync(filter);
     }
 }

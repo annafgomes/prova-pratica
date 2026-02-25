@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.API.DTOs;
 using ProductCatalog.Application.UseCases.Products;
-
+using ProductCatalog.Domain.Filters;
 namespace ProductCatalog.API.Controllers;
 
 [ApiController]
@@ -40,11 +40,12 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(
-        [FromServices] GetAllProductsUseCase useCase)
+    public async Task<IActionResult> Get(
+    [FromServices] GetAllProductsUseCase useCase,
+    [FromQuery] GetProductsFilter filter)
     {
-        var products = await useCase.ExecuteAsync();
-        return Ok(products);
+        var result = await useCase.ExecuteAsync(filter);
+        return Ok(result);
     }
 
     /// <summary>

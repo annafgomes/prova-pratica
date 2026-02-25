@@ -1,4 +1,5 @@
 ﻿using ProductCatalog.Domain.Entities;
+using ProductCatalog.Domain.Filters;
 
 namespace ProductCatalog.Domain.Interfaces;
 
@@ -24,7 +25,11 @@ public interface IProductRepository
     /// </summary>
     /// <returns>Lista de produtos</returns>
     Task<IEnumerable<Product>> GetAllAsync();
-
+   
+    /// <summary>
+    /// Retorna produtos filtrados
+    /// </summary>
+    Task<IEnumerable<Product>> GetFilteredAsync(GetProductsFilter filter);
     /// <summary>
     /// Adiciona um novo produto ao contexto
     /// (ainda não persiste no banco)
@@ -48,4 +53,6 @@ public interface IProductRepository
     /// Persiste todas as alteraçoes pendentes no banco de dados
     /// </summary>
     Task SaveChangesAsync();
+
+
 }

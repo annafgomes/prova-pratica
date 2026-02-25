@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Domain.Entities;
+using ProductCatalog.Domain.Enums;
+using ProductCatalog.Domain.Filters;
 using ProductCatalog.Domain.Interfaces;
 using ProductCatalog.Infrastructure.Persistence;
 
@@ -35,6 +37,35 @@ public class ProductRepository : IProductRepository
     public async Task<IEnumerable<Product>> GetAllAsync()
     {
         return await _context.Products.ToListAsync();
+    }
+    /// <summary>
+    /// Retorna produtos filtrados
+    /// </summary>
+    public async Task<IEnumerable<Product>> GetFilteredAsync(GetProductsFilter filter)
+    {
+        var query = _context.Products.AsQueryable();
+
+        if (!string.IsNullOrEmpty(filter.Category))
+        {
+            query = query.Where(p => p.Category == filter.Category);
+        }
+
+        if (filter.MinPrice.HasValue)
+        {
+            query = query.Where(p => p.Price >= filter.MinPrice.Value);
+        }
+
+        if (filter.MaxPrice.HasValue)
+        {
+            query = query.Where(p => p.Price <= filter.MaxPrice.Value);
+        }
+
+        if (filter.Status.HasValue)
+        {
+            query = query.Where(p => p.Status == filter.Status.Value);
+        }
+
+        return await query.ToListAsync();
     }
 
     /// <summary>
@@ -74,4 +105,5 @@ public class ProductRepository : IProductRepository
     {
         await _context.SaveChangesAsync();
     }
+    
 }

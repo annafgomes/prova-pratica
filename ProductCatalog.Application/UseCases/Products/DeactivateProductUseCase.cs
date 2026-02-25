@@ -42,7 +42,11 @@ public class DeactivateProductUseCase
 
 
 
-        await _repository.UpdateAsync(product);
+        _repository.Update(product);
+
+        await _repository.SaveChangesAsync();
+
+
 
     }
 

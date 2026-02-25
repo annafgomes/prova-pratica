@@ -37,6 +37,10 @@ public class UpdateProductUseCase
         product.UpdateStock(stockQuantity);
 
         // Salva a atualizacao
-        await _repository.UpdateAsync(product);
+        _repository.Update(product);
+
+        await _repository.SaveChangesAsync();
+
+
     }
 }

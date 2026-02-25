@@ -32,7 +32,11 @@ public class DeleteProductUseCaseTests
 
         // verifica se DeleteAsync foi chamado
         repositoryMock.Verify(
-            r => r.DeleteAsync(product),
+            r => r.Remove(product),
+            Times.Once);
+
+        repositoryMock.Verify(
+            r => r.SaveChangesAsync(),
             Times.Once);
     }
 

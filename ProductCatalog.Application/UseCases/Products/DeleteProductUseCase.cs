@@ -28,6 +28,8 @@ public class DeleteProductUseCase
             throw new KeyNotFoundException("Product not found.");
 
         // Remove o  produto
-        await _repository.DeleteAsync(product);
+        _repository.Remove(product);
+
+        await _repository.SaveChangesAsync();
     }
 }

@@ -75,7 +75,11 @@ public class UpdateProductUseCaseTests
 
         // verifica se o repositorio foi chamado
         repositoryMock.Verify(
-            r => r.UpdateAsync(product),
+            r => r.Update(product),
+            Times.Once);
+        //salva
+        repositoryMock.Verify(
+            r => r.SaveChangesAsync(),
             Times.Once);
     }
 

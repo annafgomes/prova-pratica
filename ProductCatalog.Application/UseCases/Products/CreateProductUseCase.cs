@@ -31,6 +31,8 @@ public class CreateProductUseCase
 
         await _repository.AddAsync(product);
 
+        await _repository.SaveChangesAsync();
+
         return product.Id;
     }
 }

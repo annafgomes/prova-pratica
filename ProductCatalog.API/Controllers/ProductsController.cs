@@ -2,18 +2,28 @@
 using ProductCatalog.API.DTOs;
 using ProductCatalog.Application.UseCases.Products;
 using ProductCatalog.Domain.Filters;
+using ProductCatalog.Domain.Interfaces;
+
 namespace ProductCatalog.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class ProductsController : ControllerBase
 {
+    private readonly DeleteProductImageUseCase _deleteProductImageUseCase;
+
     /// <summary>
-    /// Cria um novo produto
+    /// Construtor com injecao do caso de uso de delecao de imagem
+    /// </summary>
+    public ProductsController(DeleteProductImageUseCase deleteProductImageUseCase)
+    {
+        _deleteProductImageUseCase = deleteProductImageUseCase;
+    }
+
+    /// <summary>
+    /// Cria um novo produto no catalogo
     /// </summary>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(
         [FromServices] CreateProductUseCase useCase,
         [FromBody] CreateProductHttpRequest request)
@@ -29,31 +39,71 @@ public class ProductsController : ControllerBase
 
         var productId = await useCase.ExecuteAsync(applicationRequest);
 
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = productId },
-            null);
+        return CreatedAtAction(nameof(GetById), new { id = productId }, null);
     }
 
     /// <summary>
-    /// Retorna todos os produtos
+    /// Realiza o upload ou a substituicao da imagem de um produto
+    /// </summary>
+    [HttpPost("{id}/image")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadImage(
+        [FromServices] IStorageService storageService,
+        [FromServices] UpdateProductImageUseCase updateImageUseCase,
+        Guid id,
+        IFormFile file)
+    {
+        /// <summary>
+        /// Valida se o arquivo enviado e nulo ou vazio
+        /// </summary>
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("arquivo invalido");
+        }
+
+        var fileName = $"{Guid.NewGuid()}_{file.FileName}";
+        using var stream = file.OpenReadStream();
+
+        /// <summary>
+        /// Faz o upload para o storage e atualiza a referencia no banco
+        /// </summary>
+        var imagePath = await storageService.UploadAsync(
+            stream,
+            fileName,
+            file.ContentType
+        );
+
+        await updateImageUseCase.ExecuteAsync(id, imagePath);
+
+        return Ok(new { imagePath });
+    }
+
+    /// <summary>
+    /// Remove a imagem vinculada ao produto
+    /// </summary>
+    [HttpDelete("{id}/image")]
+    public async Task<IActionResult> DeleteImage(Guid id)
+    {
+        await _deleteProductImageUseCase.Execute(id);
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Lista os produtos com suporte a filtros e paginacao
     /// </summary>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get(
-    [FromServices] GetAllProductsUseCase useCase,
-    [FromQuery] GetProductsFilter filter)
+        [FromServices] GetAllProductsUseCase useCase,
+        [FromQuery] GetProductsFilter filter)
     {
         var result = await useCase.ExecuteAsync(filter);
         return Ok(result);
     }
 
     /// <summary>
-    /// Retorna produto por id
+    /// Busca um produto especifico pelo seu identificador unico
     /// </summary>
     [HttpGet("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(
         [FromServices] GetProductByIdUseCase useCase,
         Guid id)
@@ -63,12 +113,9 @@ public class ProductsController : ControllerBase
     }
 
     /// <summary>
-    /// Atualiza um produto existente
+    /// Atualiza os dados principais de um produto
     /// </summary>
     [HttpPut("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
         [FromServices] UpdateProductUseCase useCase,
         Guid id,
@@ -86,11 +133,9 @@ public class ProductsController : ControllerBase
     }
 
     /// <summary>
-    /// Remove um produto existente
+    /// Remove um produto permanentemente do sistema
     /// </summary>
     [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(
         [FromServices] DeleteProductUseCase useCase,
         Guid id)
@@ -98,57 +143,28 @@ public class ProductsController : ControllerBase
         await useCase.ExecuteAsync(id);
         return NoContent();
     }
+
     /// <summary>
-
-    /// Ativa um produto
-
+    /// Ativa o produto para que fique visivel no catalogo
     /// </summary>
-
     [HttpPatch("{id}/activate")]
-
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-
     public async Task<IActionResult> Activate(
-
         [FromServices] ActivateProductUseCase useCase,
-
         Guid id)
-
     {
-
         await useCase.ExecuteAsync(id);
-
         return NoContent();
-
     }
 
-
-
     /// <summary>
-
-    /// Desativa um produto
-
+    /// Desativa o produto ocultando-o do catalogo
     /// </summary>
-
     [HttpPatch("{id}/deactivate")]
-
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-
     public async Task<IActionResult> Deactivate(
-
         [FromServices] DeactivateProductUseCase useCase,
-
         Guid id)
-
     {
-
         await useCase.ExecuteAsync(id);
-
         return NoContent();
-
     }
 }

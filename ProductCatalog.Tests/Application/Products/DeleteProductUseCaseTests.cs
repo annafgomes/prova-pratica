@@ -6,12 +6,17 @@ using Xunit;
 
 namespace ProductCatalog.Tests.Application.Products;
 
+/// <summary>
+/// Classe de testes para o caso de uso de exclusao de produto
+/// </summary>
 public class DeleteProductUseCaseTests
 {
+    /// <summary>
+    /// Testa se o produto e removido corretamente quando o id existe
+    /// </summary>
     [Fact]
     public async Task Should_Delete_Product_When_Product_Exists()
     {
-        // cria produto existente
         var product = new Product(
             "Notebook",
             "Descricao",
@@ -25,34 +30,41 @@ public class DeleteProductUseCaseTests
             .Setup(r => r.GetByIdAsync(product.Id))
             .ReturnsAsync(product);
 
-        var useCase = new DeleteProductUseCase(repositoryMock.Object);
+        var storageMock = new Mock<IStorageService>();
 
-        // executa remocao
+        var useCase = new DeleteProductUseCase(
+            repositoryMock.Object,
+            storageMock.Object);
+
+        /// <summary>
+        /// Executa o caso de uso e verifica as chamadas no repositorio
+        /// </summary>
         await useCase.ExecuteAsync(product.Id);
 
-        // verifica se DeleteAsync foi chamado
-        repositoryMock.Verify(
-            r => r.Remove(product),
-            Times.Once);
-
-        repositoryMock.Verify(
-            r => r.SaveChangesAsync(),
-            Times.Once);
+        repositoryMock.Verify(r => r.Remove(product), Times.Once);
+        repositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
 
+    /// <summary>
+    /// Testa se uma excecao e lancada quando o produto nao e encontrado
+    /// </summary>
     [Fact]
     public async Task Should_Throw_Exception_When_Product_Does_Not_Exist()
     {
-        // repositorio retorna null
         var repositoryMock = new Mock<IProductRepository>();
         repositoryMock
             .Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync((Product?)null);
 
-        var useCase = new DeleteProductUseCase(repositoryMock.Object);
+        var storageMock = new Mock<IStorageService>();
 
-        // verifica se lanca excecao correta
-        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
-            useCase.ExecuteAsync(Guid.NewGuid()));
+        var useCase = new DeleteProductUseCase(
+            repositoryMock.Object,
+            storageMock.Object);
+
+        /// <summary>
+        /// Valida se a excecao esperada e disparada
+        /// </summary>
+        await Assert.ThrowsAsync<Exception>(() => useCase.ExecuteAsync(Guid.NewGuid()));
     }
 }

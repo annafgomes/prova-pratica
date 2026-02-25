@@ -1,6 +1,7 @@
 ﻿using Moq;
 using ProductCatalog.Application.UseCases.Products;
 using ProductCatalog.Domain.Entities;
+using ProductCatalog.Domain.Filters;
 using ProductCatalog.Domain.Interfaces;
 using Xunit;
 
@@ -20,13 +21,14 @@ public class GetAllProductsUseCaseTests
 
         var repositoryMock = new Mock<IProductRepository>();
         repositoryMock
-            .Setup(r => r.GetAllAsync())
+            .Setup(r => r.GetFilteredAsync(It.IsAny<GetProductsFilter>()))
             .ReturnsAsync(products);
 
         var useCase = new GetAllProductsUseCase(repositoryMock.Object);
+        var filter = new GetProductsFilter();
 
         // executa o caso de uso
-        var result = await useCase.ExecuteAsync();
+        var result = await useCase.ExecuteAsync(filter);
 
         //  verifica se retornou corretamente
         Assert.NotNull(result);
@@ -40,13 +42,13 @@ public class GetAllProductsUseCaseTests
         //prepara lista vazia simulada
         var repositoryMock = new Mock<IProductRepository>();
         repositoryMock
-            .Setup(r => r.GetAllAsync())
+            .Setup(r => r.GetFilteredAsync(It.IsAny<GetProductsFilter>()))
             .ReturnsAsync(new List<Product>());
 
         var useCase = new GetAllProductsUseCase(repositoryMock.Object);
-
+        var filter = new GetProductsFilter();
         // executa o caso de uso
-        var result = await useCase.ExecuteAsync();
+        var result = await useCase.ExecuteAsync(filter);
 
         //verifica se a lista está vazia
         Assert.NotNull(result);

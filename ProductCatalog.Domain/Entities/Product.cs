@@ -46,7 +46,7 @@ public class Product
     /// <summary>
     /// Caminho  da imagem associada ao produto.
     /// </summary>
-    public string? ImagePath { get; private set; }
+    public string? ImagePath { get; private set; } = null;
 
     /// <summary>
     /// Data de criação do produto.
@@ -170,5 +170,12 @@ public class Product
     public void Deactivate()
     {
         Status = ProductStatus.Inactive;
+    }
+    /// <summary>
+    /// Atualiza o caminho da imagem da entidade de produto
+    /// </summary>
+    public void UpdateImage(string? imagePath)
+    {
+        ImagePath = imagePath;
     }
 }

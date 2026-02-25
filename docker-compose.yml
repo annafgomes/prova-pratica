@@ -1,35 +1,30 @@
 version: '3.9'
 
-
-
 services:
-
   postgres:
-
     image: postgres:15
-
     container_name: productcatalog_postgres
-
     restart: always
-
     environment:
-
-      POSTGRES_DB: productcatalog
-
+      POSTGRES_DB: ProductCatalog
       POSTGRES_USER: postgres
-
       POSTGRES_PASSWORD: postgres
-
     ports:
-
       - "5432:5432"
-
     volumes:
-
       - postgres_data:/var/lib/postgresql/data
 
-
+  api:
+    build:
+      context: .
+      dockerfile: ProductCatalog.API/Dockerfile
+    container_name: productcatalog_api
+    depends_on:
+      - postgres
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=productcatalog;Username=postgres;Password=postgres
+    ports:
+      - "5000:8080"
 
 volumes:
-
   postgres_data:

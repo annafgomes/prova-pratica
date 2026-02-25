@@ -2,6 +2,9 @@ using ProductCatalog.Domain.Interfaces;
 using ProductCatalog.Infrastructure.Repositories;
 using ProductCatalog.Application.UseCases.Products;
 using ProductCatalog.API.Middlewares;
+using Microsoft.EntityFrameworkCore;
+using ProductCatalog.Infrastructure.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Controllers
@@ -20,6 +23,12 @@ builder.Services.AddTransient<UpdateProductUseCase>();
 builder.Services.AddTransient<DeleteProductUseCase>();
 builder.Services.AddTransient<ActivateProductUseCase>();
 builder.Services.AddTransient<DeactivateProductUseCase>();
+// Banco de dados Docker Postgree
+builder.Services.AddDbContext<ProductDbContext>(options =>
+
+    options.UseNpgsql(
+
+        builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 

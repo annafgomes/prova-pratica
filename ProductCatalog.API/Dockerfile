@@ -10,7 +10,7 @@ COPY . .
 
 # Publica a API
 
-RUN dotnet publish ProductCatalog.API/ProductCatalog.API.csproj -c Release -o /app/publish
+RUN dotnet publish ProductCatalog.API.csproj -c Release -o /app/publish
 
 # -------- ETAPA 2: RUNTIME --------
 

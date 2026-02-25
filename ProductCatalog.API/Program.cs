@@ -1,9 +1,11 @@
-using ProductCatalog.Domain.Interfaces;
-using ProductCatalog.Infrastructure.Repositories;
-using ProductCatalog.Application.UseCases.Products;
-using ProductCatalog.API.Middlewares;
 using Microsoft.EntityFrameworkCore;
+using ProductCatalog.API.Middlewares;
+using ProductCatalog.Application.UseCases.Products;
+using ProductCatalog.Domain.Interfaces;
+using ProductCatalog.Infrastructure.Services;
 using ProductCatalog.Infrastructure.Persistence;
+using ProductCatalog.Infrastructure.Repositories;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,12 @@ builder.Services.AddControllers();
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Registra o servico de armazenamento como singleton no container de dependencias
+
+builder.Services.AddSingleton<IStorageService, MinioStorageService>();
+//Registra a imagem
+builder.Services.AddScoped<UpdateProductImageUseCase>();
 
 // Banco de dados Postgres
 builder.Services.AddDbContext<ProductDbContext>(options =>
@@ -30,13 +38,15 @@ builder.Services.AddTransient<UpdateProductUseCase>();
 builder.Services.AddTransient<DeleteProductUseCase>();
 builder.Services.AddTransient<ActivateProductUseCase>();
 builder.Services.AddTransient<DeactivateProductUseCase>();
+builder.Services.AddScoped<DeleteProductImageUseCase>();
+
 
 var app = builder.Build();
 
 // Middleware Pipeline
-
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseDeveloperExceptionPage();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseMiddleware<ExceptionMiddleware>();
 //app.UseHttpsRedirection(); - Desativar direcionamento do HTTPS

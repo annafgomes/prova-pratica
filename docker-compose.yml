@@ -21,10 +21,25 @@ services:
     container_name: productcatalog_api
     depends_on:
       - postgres
+      - minio
     environment:
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=productcatalog;Username=postgres;Password=postgres
     ports:
       - "5000:8080"
 
+  minio:
+    image: minio/minio
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
 volumes:
   postgres_data:
+  minio_data:

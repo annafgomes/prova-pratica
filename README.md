@@ -18,7 +18,7 @@ Esta é a forma mais simples e garante que todos os serviços necessários serã
 
 ```bash
 git clone https://github.com/annafgomes/prova-pratica.git
-
+cd prova-pratica
 ```
 
 2. Execute o comando:
